@@ -215,7 +215,7 @@
         }
         
         #adminTab {
-            display: none;
+            display: block !important;
         }
     </style>
 </head>
@@ -383,9 +383,11 @@
                 tabToActivate.click();
             }
             
-            // Vérifier si on est déjà connecté en tant qu'admin
+            // Afficher l'onglet admin par défaut
+            document.getElementById('adminTab').style.display = 'block';
+            
+            // Si déjà connecté en tant qu'admin, afficher les contrôles
             if (isAdmin) {
-                document.getElementById('adminTab').style.display = 'block';
                 document.getElementById('adminControls').classList.remove('hidden');
                 document.getElementById('adminResults').classList.remove('hidden');
             }
