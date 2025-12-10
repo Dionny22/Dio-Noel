@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎄 Tirage au sort de Noël 🎅</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -304,6 +307,21 @@
     </div>
 
     <script>
+        // Configuration Firebase pour la production
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwkata5E939XoUIKo1NFi04XBVRsq3JDU",
+            authDomain: "dio-noel.firebaseapp.com",
+            projectId: "dio-noel",
+            storageBucket: "dio-noel.appspot.com",
+            messagingSenderId: "45503206780",
+            appId: "1:45503206780:web:a158d33c01c890e9eec0f9",
+            measurementId: "G-HBHNNZS5GJ"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
         // Données de l'application
         const PARTICIPANTS = [
             { name: 'Jennifer', password: 'J3nn!f3r#2023' },
@@ -391,45 +409,75 @@
                 document.getElementById('adminControls').classList.remove('hidden');
                 document.getElementById('adminResults').classList.remove('hidden');
             }
+            
+            // Écouter les mises à jour en temps réel
+            setupRealtimeUpdates();
         });
         
-        // Fonction pour charger les données sauvegardées
-        function loadData() {
-            const savedData = localStorage.getItem('noelTirage');
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
+        // Fonction pour charger les données depuis Firestore
+        async function loadData() {
+            try {
+                const doc = await db.collection('tirage').doc('data').get();
+                if (doc.exists) {
+                    const data = doc.data();
                     drawnPairs = data.drawnPairs || {};
                     participantLinks = data.participantLinks || {};
                     isAdmin = data.isAdmin || false;
                     
-                    console.log('Données chargées :', data);
+                    console.log('Données chargées depuis Firestore :', data);
                     return true;
-                } catch (error) {
-                    console.error('Erreur lors du chargement des données :', error);
-                    return false;
+                } else {
+                    // Créer le document s'il n'existe pas
+                    await saveData();
+                    return true;
                 }
+            } catch (error) {
+                console.error('Erreur lors du chargement des données :', error);
+                return false;
             }
-            return false;
         }
         
-        // Fonction pour sauvegarder les données
-        function saveData() {
+        // Fonction pour sauvegarder les données dans Firestore
+        async function saveData() {
             const data = {
                 drawnPairs: drawnPairs,
                 participantLinks: participantLinks,
                 isAdmin: isAdmin,
-                timestamp: new Date().toISOString()
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
             };
             
             try {
-                localStorage.setItem('noelTirage', JSON.stringify(data));
-                console.log('Données sauvegardées');
+                await db.collection('tirage').doc('data').set(data, { merge: true });
+                console.log('Données sauvegardées dans Firestore :', data);
                 return true;
             } catch (error) {
                 console.error('Erreur lors de la sauvegarde :', error);
                 return false;
             }
+        }
+        
+        // Écouter les mises à jour en temps réel
+        function setupRealtimeUpdates() {
+            db.collection('tirage').doc('data')
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data) {
+                            drawnPairs = data.drawnPairs || {};
+                            participantLinks = data.participantLinks || {};
+                            isAdmin = data.isAdmin || false;
+                            
+                            // Mettre à jour l'interface utilisateur
+                            updateDrawerSelect();
+                            updateParticipantsList();
+                            updateResults();
+                            
+                            console.log('Mise à jour en temps réel :', data);
+                        }
+                    }
+                }, (error) => {
+                    console.error('Erreur lors de l\'écoute des mises à jour :', error);
+                });
         }
         
         // Fonction pour mettre à jour la liste des participants
