@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 Tirage au sort de Noël 🎅</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --light-text: #ecf0f1;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: #f5f7fa;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin: 1.5rem 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* Styles des onglets */
+        .tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            background: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            box-shadow: var(--box-shadow);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            background: #f8f9fa;
+            margin: 0 0.2rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid transparent;
+            border-bottom: none;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active {
+            background: white;
+            color: var(--secondary-color);
+            border-color: #dee2e6;
+            border-bottom-color: white;
+            font-weight: 600;
+        }
+        
+        /* Contenu des onglets */
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Styles des formulaires et boutons */
+        input[type="text"],
+        input[type="password"],
+        select,
+        button {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0 1rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        /* Messages */
+        .message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                text-align: center;
+                padding: 0.8rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+        }
+        
+        /* Styles spécifiques */
+        .participants-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .participant-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #adminTab {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎄 Tirage au sort de Noël 🎅</h1>
+    
+    <div class="tabs">
+        <div class="tab active" data-tab="home">Accueil</div>
+        <div class="tab" data-tab="participants">Participants</div>
+        <div class="tab" data-tab="draw">Tirage</div>
+        <div class="tab" data-tab="results">Résultats</div>
+        <div class="tab" id="adminTab" data-tab="admin">Admin</div>
+    </div>
+    
+    <!-- Onglet Accueil -->
+    <div id="home" class="tab-content active">
+        <h2>Bienvenue au tirage au sort de Noël !</h2>
+        <p>Utilisez les onglets pour naviguer dans l'application :</p>
+        <ul>
+            <li><strong>Participants</strong> : Consultez la liste des participants</li>
+            <li><strong>Tirage</strong> : Effectuez un tirage au sort</li>
+            <li><strong>Résultats</strong> : Consultez les résultats des tirages</li>
+        </ul>
+    </div>
+    
+    <!-- Onglet Participants -->
+    <div id="participants" class="tab-content">
+        <h2>Liste des participants</h2>
+        <div id="participantsList">
+            <!-- La liste sera générée dynamiquement -->
+        </div>
+    </div>
+    
+    <!-- Onglet Tirage -->
+    <div id="draw" class="tab-content">
+        <h2>Effectuer un tirage</h2>
+        <div>
+            <label for="drawerSelect">Sélectionnez votre nom :</label>
+            <select id="drawerSelect">
+                <option value="">-- Sélectionnez un participant --</option>
+            </select>
+            
+            <div id="passwordContainer" style="margin: 1rem 0;">
+                <label for="passwordInput">Mot de passe :</label>
+                <input type="password" id="passwordInput" placeholder="Votre mot de passe">
+                <button onclick="togglePassword('passwordInput')">Afficher/Masquer</button>
+                <button id="drawButton" onclick="drawName()" style="margin-top: 1rem;">Effectuer le tirage</button>
+            </div>
+            
+            <div id="drawResult"></div>
+        </div>
+    </div>
+    
+    <!-- Onglet Résultats -->
+    <div id="results" class="tab-content">
+        <h2>Résultats du tirage</h2>
+        <div id="resultsList">
+            <p>Les résultats du tirage s'afficheront ici.</p>
+        </div>
+        
+        <div id="adminResults" class="admin-section hidden">
+            <h3>Vue administrateur</h3>
+            <div id="allResults">
+                <!-- Tous les résultats seront affichés ici pour l'admin -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Onglet Admin -->
+    <div id="admin" class="tab-content">
+        <h2>Connexion administrateur</h2>
+        <div class="admin-login">
+            <input type="password" id="adminPassword" placeholder="Mot de passe administrateur">
+            <button onclick="verifyAdmin()">Se connecter</button>
+            <div id="adminMessage"></div>
+        </div>
+        
+        <div id="adminControls" class="admin-section hidden">
+            <h3>Contrôles administrateur</h3>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <button class="success" onclick="showPasswords()">Afficher les mots de passe</button>
+                <button class="danger" onclick="resetAll()" style="background-color: var(--error-color);">Tout réinitialiser</button>
+            </div>
+            <div id="passwordsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Données de l'application
+        const PARTICIPANTS = [
+            { name: 'Jennifer', password: 'J3nn!f3r#2023' },
+            { name: 'Arafat', password: 'Ar@f@t$2023' },
+            { name: 'Emmanuella', password: '3mm@nu3ll@' },
+            { name: 'Antoine', password: 'Ant0!n3$2023' },
+            { name: 'Ange', password: 'Ang3!2023#' },
+            { name: 'Samir', password: 'S@m!r_2023' }
+        ];
+        
+        const ADMIN_PASSWORD = 'DIONNY228@abc';
+        
+        // Variables globales
+        let drawnPairs = {};
+        let participantLinks = {};
+        let isAdmin = false;
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Application démarrée');
+            
+            // Charger les données sauvegardées
+            loadData();
+            
+            // Mettre à jour l'interface utilisateur
+            updateDrawerSelect();
+            updateParticipantsList();
+            updateResults();
+            
+            // Configurer les écouteurs d'événements pour les onglets
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // Si on quitte l'onglet admin, déconnecter l'admin
+                    if (isAdmin && tabName !== 'admin') {
+                        isAdmin = false;
+                        document.getElementById('adminControls').classList.add('hidden');
+                        document.getElementById('adminResults').classList.add('hidden');
+                        document.getElementById('adminPassword').value = '';
+                        document.getElementById('adminMessage').innerHTML = '';
+                        saveData();
+                    }
+                    
+                    // Désactiver tous les onglets
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Activer l'onglet cliqué
+                    this.classList.add('active');
+                    const content = document.getElementById(tabName);
+                    if (content) {
+                        content.classList.add('active');
+                        
+                        // Mettre à jour les données si nécessaire
+                        if (tabName === 'participants') {
+                            updateParticipantsList();
+                        } else if (tabName === 'results') {
+                            updateResults();
+                        } else if (tabName === 'draw') {
+                            updateDrawerSelect();
+                        }
+                    }
+                    
+                    // Sauvegarder l'onglet actif
+                    localStorage.setItem('activeTab', tabName);
+                });
+            });
+            
+            // Restaurer l'onglet actif
+            const activeTab = localStorage.getItem('activeTab') || 'home';
+            const tabToActivate = document.querySelector(`.tab[data-tab="${activeTab}"]`);
+            if (tabToActivate) {
+                tabToActivate.click();
+            }
+            
+            // Vérifier si on est déjà connecté en tant qu'admin
+            if (isAdmin) {
+                document.getElementById('adminTab').style.display = 'block';
+                document.getElementById('adminControls').classList.remove('hidden');
+                document.getElementById('adminResults').classList.remove('hidden');
+            }
+        });
+        
+        // Fonction pour charger les données sauvegardées
+        function loadData() {
+            const savedData = localStorage.getItem('noelTirage');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    drawnPairs = data.drawnPairs || {};
+                    participantLinks = data.participantLinks || {};
+                    isAdmin = data.isAdmin || false;
+                    
+                    console.log('Données chargées :', data);
+                    return true;
+                } catch (error) {
+                    console.error('Erreur lors du chargement des données :', error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // Fonction pour sauvegarder les données
+        function saveData() {
+            const data = {
+                drawnPairs: drawnPairs,
+                participantLinks: participantLinks,
+                isAdmin: isAdmin,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem('noelTirage', JSON.stringify(data));
+                console.log('Données sauvegardées');
+                return true;
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde :', error);
+                return false;
+            }
+        }
+        
+        // Fonction pour mettre à jour la liste des participants
+        function updateParticipantsList() {
+            const container = document.getElementById('participantsList');
+            if (!container) return;
+            
+            if (PARTICIPANTS.length === 0) {
+                container.innerHTML = '<p>Aucun participant pour le moment.</p>';
+                return;
+            }
+            
+            let html = '<ul class="participants-list">';
+            PARTICIPANTS.forEach(participant => {
+                const hasDrawn = drawnPairs[participant.name] ? ' (a déjà tiré)' : '';
+                html += `
+                    <li class="participant-item">
+                        <span>${participant.name}${hasDrawn}</span>
+                        <span>${drawnPairs[participant.name] ? '✅' : '⏳'}</span>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            
+            container.innerHTML = html;
+        }
+        
+        // Fonction pour mettre à jour la liste des tireurs
+        function updateDrawerSelect() {
+            const select = document.getElementById('drawerSelect');
+            if (!select) return;
+            
+            // Sauvegarder la sélection actuelle
+            const selectedValue = select.value;
+            
+            // Réinitialiser la liste
+            select.innerHTML = '<option value="">-- Sélectionnez un participant --</option>';
+            
+            // Ajouter les participants qui n'ont pas encore tiré
+            PARTICIPANTS.forEach(participant => {
+                if (!drawnPairs[participant.name]) {
+                    const option = document.createElement('option');
+                    option.value = participant.name;
+                    option.textContent = participant.name;
+                    select.appendChild(option);
+                }
+            });
+            
+            // Restaurer la sélection si elle existe toujours
+            if (selectedValue && !drawnPairs[selectedValue]) {
+                select.value = selectedValue;
+            }
+        }
+        
+        // Fonction pour effectuer un tirage
+        function drawName() {
+            const select = document.getElementById('drawerSelect');
+            const passwordInput = document.getElementById('passwordInput');
+            const resultDiv = document.getElementById('drawResult');
+            
+            if (!select || !passwordInput || !resultDiv) return;
+            
+            const drawerName = select.value;
+            const password = passwordInput.value;
+            
+            // Validation
+            if (!drawerName) {
+                showMessage('Veuillez sélectionner votre nom', 'error', resultDiv);
+                return;
+            }
+            
+            // Vérifier le mot de passe
+            const participant = PARTICIPANTS.find(p => p.name === drawerName);
+            if (!participant || participant.password !== password) {
+                showMessage('Mot de passe incorrect', 'error', resultDiv);
+                return;
+            }
+            
+            // Vérifier si la personne a déjà tiré
+            if (drawnPairs[drawerName]) {
+                showMessage('Vous avez déjà effectué un tirage', 'error', resultDiv);
+                return;
+            }
+            
+            // Créer une liste des participants disponibles (exclure soi-même)
+            const availableParticipants = PARTICIPANTS.filter(p => 
+                p.name !== drawerName && !Object.values(drawnPairs).includes(p.name)
+            );
+            
+            if (availableParticipants.length === 0) {
+                showMessage('Aucun participant disponible pour le tirage', 'error', resultDiv);
+                return;
+            }
+            
+            // Effectuer le tirage
+            const randomIndex = Math.floor(Math.random() * availableParticipants.length);
+            const recipient = availableParticipants[randomIndex].name;
+            
+            // Enregistrer le résultat
+            drawnPairs[drawerName] = recipient;
+            
+            // Générer un lien unique pour ce tirage
+            const linkId = generateUniqueId();
+            participantLinks[linkId] = {
+                name: drawerName,
+                recipient: recipient,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Sauvegarder les données
+            saveData();
+            
+            // Afficher le résultat
+            const resultHtml = `
+                <div class="message success">
+                    <h3>Résultat du tirage</h3>
+                    <p>${drawerName}, vous avez tiré :</p>
+                    <h2>${recipient} !</h2>
+                    <p>Gardez cette information secrète jusqu'au jour J ! 🎄</p>
+                    <p>Lien unique pour revoir ce résultat :</p>
+                    <input type="text" value="${window.location.href.split('?')[0]}?p=${linkId}" readonly>
+                </div>
+            `;
+            
+            resultDiv.innerHTML = resultHtml;
+            
+            // Mettre à jour l'interface
+            updateDrawerSelect();
+            updateParticipantsList();
+            updateResults();
+        }
+        
+        // Fonction pour mettre à jour les résultats
+        function updateResults() {
+            updateResultsForUser();
+            if (isAdmin) {
+                updateResultsForAdmin();
+            }
+        }
+        
+        // Fonction pour mettre à jour les résultats pour l'utilisateur
+        function updateResultsForUser() {
+            const container = document.getElementById('resultsList');
+            if (!container) return;
+            
+            // Vérifier si l'utilisateur a un résultat à afficher
+            const urlParams = new URLSearchParams(window.location.search);
+            const participantId = urlParams.get('p');
+            
+            if (participantId && participantLinks[participantId]) {
+                const data = participantLinks[participantId];
+                container.innerHTML = `
+                    <div class="message success">
+                        <h3>Votre tirage</h3>
+                        <p>${data.name}, vous avez tiré :</p>
+                        <h2>${data.recipient} !</h2>
+                        <p>Gardez cette information secrète jusqu'au jour J ! 🎄</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <p>Effectuez un tirage pour voir les résultats.</p>
+                    <p>Si vous avez déjà effectué un tirage, utilisez le lien unique qui vous a été fourni.</p>
+                `;
+            }
+        }
+        
+        // Fonction pour mettre à jour les résultats pour l'admin
+        function updateResultsForAdmin() {
+            const container = document.getElementById('allResults');
+            if (!container) return;
+            
+            if (Object.keys(drawnPairs).length === 0) {
+                container.innerHTML = '<p>Aucun tirage effectué pour le moment.</p>';
+                return;
+            }
+            
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">';
+            for (const [drawer, recipient] of Object.entries(drawnPairs)) {
+                html += `
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: var(--border-radius);">
+                        <h4 style="margin: 0 0 0.5rem 0;">${drawer}</h4>
+                        <p style="margin: 0;">a tiré <strong>${recipient}</strong></p>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+        
+        // Fonction pour vérifier le mot de passe admin
+        function verifyAdmin() {
+            const passwordInput = document.getElementById('adminPassword');
+            const messageDiv = document.getElementById('adminMessage');
+            
+            if (!passwordInput || !messageDiv) return;
+            
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('adminControls').classList.remove('hidden');
+                document.getElementById('adminResults').classList.remove('hidden');
+                
+                showMessage('Connexion réussie en tant qu\'administrateur', 'success', messageDiv);
+                saveData();
+                updateResults();
+                
+                // Passer à l'onglet admin après connexion
+                document.querySelector('.tab[data-tab="admin"]').click();
+            } else {
+                showMessage('Mot de passe administrateur incorrect', 'error', messageDiv);
+            }
+            
+            passwordInput.value = '';
+        }
+        
+        // Fonction pour afficher les mots de passe (admin)
+        function showPasswords() {
+            if (!isAdmin) return;
+            
+            const container = document.getElementById('passwordsList');
+            if (!container) return;
+            
+            let html = '<h4>Liste des participants et mots de passe</h4><ul style="list-style: none; padding: 0;">';
+            
+            PARTICIPANTS.forEach(participant => {
+                html += `
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                        <span style="font-weight: bold;">${participant.name}</span> : 
+                        <code>${participant.password}</code>
+                    </li>
+                `;
+            });
+            
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+        
+        // Fonction pour réinitialiser tous les tirages (admin)
+        function resetAll() {
+            if (!isAdmin) return;
+            
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser tous les tirages ? Cette action est irréversible.')) {
+                drawnPairs = {};
+                participantLinks = {};
+                saveData();
+                
+                // Mettre à jour l'interface
+                updateDrawerSelect();
+                updateParticipantsList();
+                updateResults();
+                
+                alert('Tous les tirages ont été réinitialisés.');
+            }
+        }
+        
+        // Fonction utilitaire pour afficher un message
+        function showMessage(message, type, container) {
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="message ${type}">
+                    ${message}
+                </div>
+            `;
+            
+            // Supprimer le message après 5 secondes
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Fonction pour générer un ID unique
+        function generateUniqueId() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        
+        // Fonction pour basculer l'affichage du mot de passe
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+            }
+        }
+    </script>
+</body>
+</html>
