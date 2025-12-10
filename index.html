@@ -239,10 +239,12 @@
         <p style="font-size: 1.2em; color: #2c3e50; margin-bottom: 20px;">Inspiiiii 😊</p>
     </div>
     
-   <!-- Onglet Accueil -->
+    <!-- Onglet Accueil -->
     <div id="home" class="tab-content active">
         <h2>Bienvenue au tirage au sort de Noël !</h2>
-        <p>Utilisez les onglets pour naviguer dans l'application :</p>
+        <p>Chers amis,</p>
+        <p>Chaque participant recevra le nom de la personne à qui offrir un cadeau. Ne partagez pas votre tirage avec les autres, gardez le secret jusqu'au jour J !!!</p>
+        <p>Cliquez sur le bouton Tirage....</p>
         <ul>
             <li><strong>Participants</strong> : Consultez la liste des participants</li>
             <li><strong>Tirage</strong> : Effectuez un tirage au sort</li>
@@ -284,13 +286,6 @@
         <div id="resultsList">
             <p>Les résultats du tirage s'afficheront ici.</p>
         </div>
-        
-        <div id="adminResults" class="admin-section hidden">
-            <h3>Vue administrateur</h3>
-            <div id="allResults">
-                <!-- Tous les résultats seront affichés ici pour l'admin -->
-            </div>
-        </div>
     </div>
     
     <!-- Onglet Admin -->
@@ -309,6 +304,13 @@
                 <button class="danger" onclick="resetAll()" style="background-color: var(--error-color);">Tout réinitialiser</button>
             </div>
             <div id="passwordsList"></div>
+        </div>
+        
+        <div id="adminResults" class="admin-section hidden">
+            <h3>Vue administrateur</h3>
+            <div id="allResults">
+                <!-- Tous les résultats seront affichés ici pour l'admin -->
+            </div>
         </div>
     </div>
 
