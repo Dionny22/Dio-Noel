@@ -30,3 +30,4 @@ if (Test-Path $indexPath) {
 # Garder la fenêtre ouverte
 Write-Host "`nAppuyez sur une touche pour quitter..."
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+
